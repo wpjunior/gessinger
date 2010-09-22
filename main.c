@@ -1,16 +1,19 @@
 #include <glib.h>
 #include <gessinger/gui.h>
 #include <gessinger/jscontrol.h>
+#include <gessinger/xmlconfig.h>
 
 int main(int argc, char *argv[])
 {
   GessingerGui *gui;
   GessingerJscontrol *jsct;
+  GessingerXmlconfig *gxml_config;
   GError *error = NULL;
   gtk_init(&argc, &argv);
 
   jsct = gessinger_jscontrol_new("/dev/input/js0",
 				 &error);
+  gxml_config = gessinger_xmlconfig_new("config.xml");
 
   if ((jsct==NULL)&&(error!=NULL))
     {

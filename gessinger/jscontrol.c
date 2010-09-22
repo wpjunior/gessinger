@@ -58,13 +58,13 @@ gessinger_jscontrol_do_io (GIOChannel *source,
   else if (js.type==JS_EVENT_AXIS)
     self->axes[js.number] = js.value;
 
-  int i;
+  /*int i;
   for (i=0; i<self->numbuttons; i++)
     printf ("%d", self->buttons[i]);
   printf (" ");
   for (i=0; i<self->numaxes; i++)
     printf ("%d|", self->axes[i]);
-    printf ("\n");
+    printf ("\n");*/
 
 }
 
