@@ -17,7 +17,7 @@
 
 #include <glib.h>
 #include "gessinger/xmlconfig.h"
-#include "gessinger/preset.h"
+#include "gessinger/midi.h"
 
 G_DEFINE_TYPE (GessingerXmlconfig, gessinger_xmlconfig, G_TYPE_OBJECT);
 
@@ -110,13 +110,12 @@ gessinger_xmlconfig_setup_auto_keys(GessingerXmlconfig *self,
 
     key->id = i;
     key->num_sources = num_notes;
-    key->sources = g_malloc0(sizeof(GessingerPresetKeySource) * key->num_sources);
-
-    for (j=0; j<num_notes; j++) {
-      key->sources[j].source_id = source;
-      key->sources[j].midi_code = gessinger_get_midi_code(tone, octave, notes_interval[j]);
-    }
-    g_print ("setuping auto key %d: %d %d %d\n", i, source, tone, octave, preset->num_keys);
+    key->sources = gessinger_midi_source_new (key->id,
+					      notes_interval,
+					      num_notes,
+					      tone,
+					      octave,
+					      source);
   }
 }
 
