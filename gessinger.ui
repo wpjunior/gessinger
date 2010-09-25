@@ -1,13 +1,7 @@
 <?xml version="1.0"?>
 <interface>
   <requires lib="gtk+" version="2.16"/>
-  <!-- interface-naming-policy project-wide -->
-  <object class="GtkListStore" id="liststore">
-    <columns>
-      <!-- column-name gchar1 -->
-      <column type="gchar"/>
-    </columns>
-  </object>
+  <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkWindow" id="window">
     <property name="title" translatable="yes">Gessinger</property>
     <child>
@@ -92,10 +86,18 @@
                 <property name="shadow_type">in</property>
                 <child>
                   <object class="GtkTreeView" id="treeview">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="model">liststore</property>
-                    <property name="search_column">0</property>
+                    <signal name="row_activated" handler="treeview_row_activated_cb"/>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="column">
+                        <property name="title">Preset Name</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="renderer"/>
+                          <attributes>
+                            <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

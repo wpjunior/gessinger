@@ -42,6 +42,7 @@ struct _GessingerXmlconfig
   gchar *config_file;
   xmlDoc *doc;
   xmlNode *root;
+  GList *list_presets;
 };
 
 struct _GessingerXmlconfigClass

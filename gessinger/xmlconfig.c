@@ -16,6 +16,7 @@
  */
 
 #include <glib.h>
+#include <gtk/gtk.h>
 #include "gessinger/xmlconfig.h"
 #include "gessinger/midi.h"
 
@@ -190,25 +191,30 @@ gessinger_xmlconfig_add_preset(GessingerXmlconfig *self,
       }
     }
   }
+
+  self->list_presets = g_list_append(self->list_presets, preset);
 }
 
-static void
-gessinger_xmlconfig_read_configs(GessingerXmlconfig *self)
+static int
+gessinger_xmlconfig_read_configs(GessingerXmlconfig *self,
+				 GError **error)
 {
   xmlNode *cur_node;
   
   self->doc = xmlReadFile(self->config_file, NULL, 0);
   if (self->doc == NULL) {
-    g_error ("Failed to open config file");
-    return;
+    *error = g_error_new (g_quark_from_static_string("GessingerXmlConfigError"),
+			 1, "Failed to read config file");
+    return -1;
   }
 
   self->root = xmlDocGetRootElement(self->doc);
   if (self->root == NULL) {
     g_warning ("config file is empty");
-    return;
+    return 1;
   }
 
+  self->list_presets = NULL;
   //load presets
   for (cur_node=self->root->children; cur_node; cur_node = cur_node->next) {
     if (cur_node->type == XML_ELEMENT_NODE) {
@@ -223,8 +229,22 @@ GessingerXmlconfig *
 gessinger_xmlconfig_new (gchar *config_file)
 {
   GessingerXmlconfig *obj;
+  GtkWidget *dialog;
+  GError *error = NULL;
+
   obj = g_object_new (GESSINGER_XMLCONFIG_TYPE, NULL);
   obj->config_file = config_file;
-  gessinger_xmlconfig_read_configs(obj);
+  gessinger_xmlconfig_read_configs(obj, &error);
+
+  if (error!=NULL) {
+    dialog = gtk_message_dialog_new (NULL,
+				     GTK_DIALOG_DESTROY_WITH_PARENT,
+				     GTK_MESSAGE_ERROR,
+				     GTK_BUTTONS_CLOSE,
+				     error->message);
+    gtk_dialog_run (GTK_DIALOG (dialog));
+    exit(1);
+  }
+
   return obj;
 }

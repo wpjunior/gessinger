@@ -9,19 +9,26 @@ int main(int argc, char *argv[])
   GessingerJscontrol *jsct;
   GessingerXmlconfig *gxml_config;
   GError *error = NULL;
+  GtkDialog *dialog;
   gtk_init(&argc, &argv);
 
   jsct = gessinger_jscontrol_new("/dev/input/js0",
 				 &error);
-  gxml_config = gessinger_xmlconfig_new("config.xml");
 
   if ((jsct==NULL)&&(error!=NULL))
     {
-      g_print ("ERRO: %s\n", error->message);
-      g_error_free(error);
+      dialog = gtk_message_dialog_new (NULL,
+				       GTK_DIALOG_DESTROY_WITH_PARENT,
+				       GTK_MESSAGE_ERROR,
+				       GTK_BUTTONS_CLOSE,
+				       error->message);
+      gtk_dialog_run (GTK_DIALOG (dialog));
+      exit(1);
     }
 
-  gui = gessinger_gui_new();
+  gxml_config = gessinger_xmlconfig_new("config.xml");
+
+  gui = gessinger_gui_new(gxml_config);
   gessinger_gui_show(gui);
   gtk_main();
   return 0;

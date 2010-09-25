@@ -18,6 +18,22 @@
 #include <glib.h>
 #include "gessinger/midi.h"
 
+static int escale[7] = {0, 2, 4, 5, 7, 9, 11};
+//C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11
+
+gint is_normal_note (int n)
+{
+  if (n>12) n=n%12;
+  return ((n==0)||(n==2)||(n==4)||(n==5)||(n==7)||(n==9)||(n==11));
+}
+
+gint get_note_pos(int n)
+{
+  int p;
+  p = -1;
+  for (p=0; p<=6; p++) if (escale[p]==n) break;
+  return p;
+}
 GessingerPresetKeySource* gessinger_midi_source_new (gint n_button,
 						     gint *notes_interval,
 						     gint num_notes,
@@ -26,17 +42,21 @@ GessingerPresetKeySource* gessinger_midi_source_new (gint n_button,
 						     gint source)
 {
   GessingerPresetKeySource *obj;
-  gint i, o;
+  gint i, o, n, p, r, is_accident;
   obj = g_malloc0(sizeof(GessingerPresetKeySource) * num_notes);
-  static int escale[7] = {0, 2, 4, 5, 7, 9, 11};
+  
+  is_accident = !is_normal_note(n_button);
 
   for (i=0; i<num_notes; i++) {
     o = octave;
     obj[i].source_id = source;
-
-    if (notes_interval[i]>=0) {
-      obj[i].midi_code = ((octave+1)*12);
-      g_print ("b: %d -> %d\n", n_button, obj[i].midi_code);
+    
+    if (!is_accident) {
+      p = get_note_pos(n_button);
+      r = p + notes_interval[i]-1;
+      if (r>=7) o = o +(r%7);
+      obj[i].midi_code = ((o+1)*12)+tone+n_button;
+      g_print ("b: %d -> %d %d\n", n_button, obj[i].midi_code, r%7);
     }
   }
 

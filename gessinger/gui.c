@@ -18,6 +18,12 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <gessinger/gui.h>
+#include <gessinger/preset.h>
+
+enum {
+  GESSINGER_COLUMN_PRESET,
+  GESSINGER_COLUMN_PRESET_NAME
+};
 
 G_DEFINE_TYPE (GessingerGui, gessinger_gui, G_TYPE_OBJECT);
 
@@ -31,14 +37,23 @@ gessinger_gui_class_init (GessingerGuiClass *klass)
 static void
 gessinger_gui_init (GessingerGui *self)
 {
+
   self->builder = gtk_builder_new ();
+
   gtk_builder_add_from_file(self->builder,
 			    "gessinger.ui",
 			    NULL);
+
   self->window = GTK_WIDGET(gtk_builder_get_object(self->builder,
 						   "window"));
   self->keyboard = GTK_WIDGET(gtk_builder_get_object(self->builder,
 						     "keyboard"));
+  self->liststore = gtk_list_store_new (2, G_TYPE_POINTER, G_TYPE_STRING);
+  self->treeview = GTK_WIDGET (gtk_builder_get_object(self->builder,
+						      "treeview"));
+
+  gtk_tree_view_set_model(GTK_TREE_VIEW(self->treeview),
+			  GTK_TREE_MODEL(self->liststore));
   gtk_builder_connect_signals(self->builder, self);
 }
 
@@ -46,6 +61,18 @@ void gessinger_gui_show (GessingerGui *self)
 {
   gtk_widget_show_all (self->window);
   gessinger_gui_draw_keyboard(self);
+}
+
+void gessinger_gui_load_preset (GessingerPreset *preset,
+				GessingerGui    *self)
+{
+  GtkTreeIter iter;
+  gtk_list_store_append (self->liststore, &iter);
+  gtk_list_store_set (self->liststore, &iter,
+		      GESSINGER_COLUMN_PRESET, preset,
+		      GESSINGER_COLUMN_PRESET_NAME, preset->name,
+		      -1);
+  g_print ("%s\n", preset->name);
 }
 
 void gessinger_gui_new_clicked (GtkWidget *widget, GessingerGui *self)
@@ -63,10 +90,18 @@ void gessinger_gui_show_about (GtkWidget *widget, GessingerGui *self)
 }
 
 GessingerGui *
-gessinger_gui_new (void)
+gessinger_gui_new (GessingerXmlconfig *config)
 {
   GessingerGui *obj;
   obj = g_object_new (GESSINGER_GUI_TYPE, NULL);
+  obj->config = config;
+
+  /* Load Presets */
+  if (obj->config->list_presets!=NULL)
+    g_list_foreach(g_list_first(obj->config->list_presets),
+		   (GFunc) gessinger_gui_load_preset,
+		   obj);
+
   return obj;
 }
 
@@ -88,4 +123,18 @@ void gessinger_gui_del_preset (GtkWidget *widget, GessingerGui *self)
 void gessinger_gui_edit_preset (GtkWidget *widget, GessingerGui *self)
 {
   g_print ("edit_preset\n");
+}
+
+void treeview_row_activated_cb (GtkTreeView       *tree_view,
+				GtkTreePath       *path,
+				GtkTreeViewColumn *column,
+				GessingerGui      *self)
+{
+  GessingerPreset *preset;
+  GtkTreeIter iter;
+  if (!gtk_tree_model_get_iter (GTK_TREE_MODEL(self->liststore), &iter, path)) return;
+  gtk_tree_model_get (GTK_TREE_MODEL(self->liststore), &iter,
+		      GESSINGER_COLUMN_PRESET, &preset,
+		      -1);
+  g_print ("Preset: %s\n", preset->name);
 }
