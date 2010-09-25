@@ -2,6 +2,7 @@
 #include <gessinger/gui.h>
 #include <gessinger/jscontrol.h>
 #include <gessinger/xmlconfig.h>
+#include <gessinger/interface.h>
 
 int main(int argc, char *argv[])
 {
