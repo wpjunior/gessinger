@@ -18,7 +18,6 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <gessinger/gui.h>
-#include <gessinger/preset.h>
 
 enum {
   GESSINGER_COLUMN_PRESET,
@@ -89,18 +88,28 @@ void gessinger_gui_show_about (GtkWidget *widget, GessingerGui *self)
   gtk_widget_hide(GTK_WIDGET(about_dialog));
 }
 
+static void
+gessinger_gui_load_configs (GessingerGui *self)
+{
+  float f;
+  f = fluid_synth_get_gain(self->interface->f_synth);
+  g_print ("loading configs %f\n", f);
+}
+
 GessingerGui *
-gessinger_gui_new (GessingerXmlconfig *config)
+gessinger_gui_new (GessingerInterface *interface)
 {
   GessingerGui *obj;
   obj = g_object_new (GESSINGER_GUI_TYPE, NULL);
-  obj->config = config;
+  obj->interface = interface;
 
   /* Load Presets */
-  if (obj->config->list_presets!=NULL)
-    g_list_foreach(g_list_first(obj->config->list_presets),
+  if (obj->interface->config->list_presets!=NULL)
+    g_list_foreach(g_list_first(obj->interface->config->list_presets),
 		   (GFunc) gessinger_gui_load_preset,
 		   obj);
+
+  gessinger_gui_load_configs(obj);
 
   return obj;
 }
@@ -136,5 +145,8 @@ void treeview_row_activated_cb (GtkTreeView       *tree_view,
   gtk_tree_model_get (GTK_TREE_MODEL(self->liststore), &iter,
 		      GESSINGER_COLUMN_PRESET, &preset,
 		      -1);
-  g_print ("Preset: %s\n", preset->name);
+  if ((preset!=NULL)&&(gessinger_interface_set_preset(self->interface, preset))) {
+    gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(self->builder, "active_preset")),
+			preset->name);
+  }
 }

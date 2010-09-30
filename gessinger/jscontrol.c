@@ -44,28 +44,35 @@ gessinger_jscontrol_init (GessingerJscontrol *self)
   self = GESSINGER_JSCONTROL (self);
 }
 
-static int*
+static gboolean
 gessinger_jscontrol_do_io (GIOChannel *source,
 			   GIOCondition condition,
 			   GessingerJscontrol *self)
 {
   static struct js_event js;
+
+  if (condition==G_IO_HUP) {
+    g_warning ("Joystick unpluged"); //TODO CallInterface
+    return FALSE;
+  }
+  else if (condition==G_IO_ERR) {
+    g_warning ("Joystick error"); //TODO CallInterface
+    return FALSE;
+  }
+
   read(self->jsfd, &js, sizeof(struct js_event));
-  
-  if (js.type==JS_EVENT_BUTTON)
+
+  if (js.type==JS_EVENT_BUTTON) {
     self->buttons[js.number] = js.value;
+    (* self->button_callback) (js.number, js.value, self->button_callback_data);
+  }
 
-  else if (js.type==JS_EVENT_AXIS)
+  else if (js.type==JS_EVENT_AXIS) {
     self->axes[js.number] = js.value;
+    (* self->axis_callback) (js.number, js.value, self->axis_callback_data);
+  }
 
-  /*int i;
-  for (i=0; i<self->numbuttons; i++)
-    printf ("%d", self->buttons[i]);
-  printf (" ");
-  for (i=0; i<self->numaxes; i++)
-    printf ("%d|", self->axes[i]);
-    printf ("\n");*/
-
+  return TRUE;
 }
 
 static void

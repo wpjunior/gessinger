@@ -22,7 +22,7 @@ GessingerPreset *
 gessinger_preset_new (void)
 {
   GessingerPreset *obj;
-  obj = g_malloc(sizeof(GessingerPreset));
+  obj = g_malloc0(sizeof(GessingerPreset));
   obj->name = NULL;
   obj->sources = g_hash_table_new_full (g_int_hash, g_int_equal, NULL, g_free);
   return obj;

@@ -23,6 +23,7 @@
 #include <gtk/gtk.h>
 #include <glib-object.h>
 #include "gessinger/xmlconfig.h"
+#include "gessinger/interface.h"
 
 G_BEGIN_DECLS
 #define GESSINGER_GUI_TYPE                  (gessinger_gui_get_type ())
@@ -43,7 +44,7 @@ struct _GessingerGui
   GtkWidget *window;
   GtkWidget *keyboard;
   GtkWidget *treeview;
-  GessingerXmlconfig *config;
+  GessingerInterface *interface;
   GtkListStore *liststore;
   GtkTreeViewColumn *column;
 };
@@ -55,7 +56,7 @@ struct _GessingerGuiClass
 };
 
 GType gessinger_gui_get_type (void) G_GNUC_CONST;
-GessingerGui *gessinger_gui_new (GessingerXmlconfig *config);
+GessingerGui *gessinger_gui_new (GessingerInterface *interface);
 void gessinger_gui_show (GessingerGui *self);
 
 G_END_DECLS

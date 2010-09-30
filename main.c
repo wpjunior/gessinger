@@ -6,11 +6,12 @@
 
 int main(int argc, char *argv[])
 {
+  GessingerInterface *interface;
   GessingerGui *gui;
   GessingerJscontrol *jsct;
   GessingerXmlconfig *gxml_config;
   GError *error = NULL;
-  GtkDialog *dialog;
+  GtkWidget *dialog;
   gtk_init(&argc, &argv);
 
   jsct = gessinger_jscontrol_new("/dev/input/js0",
@@ -28,8 +29,9 @@ int main(int argc, char *argv[])
     }
 
   gxml_config = gessinger_xmlconfig_new("config.xml");
+  interface = gessinger_interface_new(gxml_config, jsct);
 
-  gui = gessinger_gui_new(gxml_config);
+  gui = gessinger_gui_new(interface);
   gessinger_gui_show(gui);
   gtk_main();
   return 0;

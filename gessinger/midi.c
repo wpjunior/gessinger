@@ -42,21 +42,33 @@ GessingerPresetKeySource* gessinger_midi_source_new (gint n_button,
 						     gint source)
 {
   GessingerPresetKeySource *obj;
-  gint i, o, n, p, r, is_accident;
+  gint i, note_octave, note_pos, r, is_accident, n, start_scale;
   obj = g_malloc0(sizeof(GessingerPresetKeySource) * num_notes);
-  
-  is_accident = !is_normal_note(n_button);
+
+  start_scale = (n_button - tone);
+  if (start_scale<0) start_scale = 12 - (start_scale*-1);
+
+  is_accident = !is_normal_note(start_scale);
 
   for (i=0; i<num_notes; i++) {
-    o = octave;
+    note_octave = octave;
     obj[i].source_id = source;
-    
+
     if (!is_accident) {
-      p = get_note_pos(n_button);
-      r = p + notes_interval[i]-1;
-      if (r>=7) o = o +(r%7);
-      obj[i].midi_code = ((o+1)*12)+tone+n_button;
-      g_print ("b: %d -> %d %d\n", n_button, obj[i].midi_code, r%7);
+      note_pos = get_note_pos(start_scale);
+      if (notes_interval[i] >= 1) r = note_pos + notes_interval[i]-1;
+      else if (notes_interval[i] < -1) r = note_pos + notes_interval[i]+1;
+
+      note_octave = note_octave +(r/7);
+      if (r<0) {
+	//r = 7 - (r * -1);
+	//n = (r*-1)-7;
+	//TODO: CALCULATE ESCALE DESC
+
+      }
+      r = r%7;
+      obj[i].midi_code = ((note_octave+1)*12)+escale[r];
+      g_print ("b: %d -> %d\n", n_button, obj[i].midi_code);
     }
   }
 

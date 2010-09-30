@@ -1,110 +1,201 @@
 <config>
     <preset name="Bass" mode="s">
         <source id="1" font="1" bank="0" preset="40"/>
+        <source id="2" font="1" bank="0" preset="39"/>
         <key id="0">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="2">36</midi>
+            <midi source="1">60</midi>
+            <midi source="1">64</midi>
+            <midi source="1">67</midi>
         </key>
         <key id="1">
             <midi source="1">36</midi>
             <midi source="1">40</midi>
         </key>
         <key id="2">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="2">38</midi>
+            <midi source="1">62</midi>
+            <midi source="1">65</midi>
+            <midi source="1">69</midi>
         </key>
         <key id="3">
             <midi source="1">36</midi>
             <midi source="1">40</midi>
         </key>
         <key id="4">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="2">40</midi>
+            <midi source="1">64</midi>
+            <midi source="1">67</midi>
+            <midi source="1">71</midi>
         </key>
         <key id="5">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="2">41</midi>
+            <midi source="1">65</midi>
+            <midi source="1">69</midi>
+            <midi source="1">72</midi>
         </key>
         <key id="6">
             <midi source="1">36</midi>
             <midi source="1">40</midi>
         </key>
         <key id="7">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="2">43</midi>
+            <midi source="1">67</midi>
+            <midi source="1">71</midi>
+            <midi source="1">74</midi>
         </key>
         <key id="8">
             <midi source="1">36</midi>
             <midi source="1">40</midi>
         </key>
         <key id="9">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="2">45</midi>
+            <midi source="1">69</midi>
+            <midi source="1">72</midi>
+            <midi source="1">76</midi>
         </key>
         <key id="10">
             <midi source="1">36</midi>
             <midi source="1">40</midi>
         </key>
-        <key id="11">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+        <key id="7">
+            <midi source="2">47</midi>
+            <midi source="1">69</midi>
+            <midi source="1">73</midi>
+            <midi source="1">77</midi>
         </key>
         
     </preset>
-    <preset name="Bass2" mode="s">
-        <source id="1" font="1" bank="0" preset="42"/>
+    <preset name="Bass2" mode="g">
+        <source id="1" font="1" bank="0" preset="39"/>
         <key id="0">
             <midi source="1">36</midi>
-            <midi source="1">40</midi>
         </key>
         <key id="1">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="1">37</midi>
         </key>
         <key id="2">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="1">38</midi>
         </key>
         <key id="3">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="1">39</midi>
         </key>
         <key id="4">
-            <midi source="1">36</midi>
             <midi source="1">40</midi>
         </key>
         <key id="5">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="1">41</midi>
         </key>
         <key id="6">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="1">42</midi>
         </key>
         <key id="7">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="1">43</midi>
         </key>
         <key id="8">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="1">44</midi>
         </key>
         <key id="9">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="1">45</midi>
         </key>
         <key id="10">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="1">46</midi>
         </key>
         <key id="11">
-            <midi source="1">36</midi>
-            <midi source="1">40</midi>
+            <midi source="1">47</midi>
         </key>
         
     </preset>
-    <!--<preset name="Bass" mode="s">
+    <preset name="Bateria" mode="s">
+        <source id="1" font="1" bank="128" preset="1"/>
+        <key id="0">
+            <midi source="1">36</midi>
+        </key>
+        <key id="1">
+            <midi source="1">37</midi>
+        </key>
+        <key id="2">
+            <midi source="1">38</midi>
+        </key>
+        <key id="3">
+            <midi source="1">39</midi>
+        </key>
+        <key id="4">
+            <midi source="1">40</midi>
+        </key>
+        <key id="5">
+            <midi source="1">41</midi>
+        </key>
+        <key id="6">
+            <midi source="1">42</midi>
+        </key>
+        <key id="7">
+            <midi source="1">43</midi>
+        </key>
+        <key id="8">
+            <midi source="1">44</midi>
+        </key>
+        <key id="9">
+            <midi source="1">45</midi>
+        </key>
+        <key id="10">
+            <midi source="1">46</midi>
+        </key>
+        <key id="11">
+            <midi source="1">47</midi>
+        </key>
+        
+    </preset>
+    <preset name="Bateria Eletronica" mode="s">
+        <source id="1" font="1" bank="128" preset="24"/>
+        <key id="0">
+            <midi source="1">36</midi>
+        </key>
+        <key id="1">
+            <midi source="1">37</midi>
+        </key>
+        <key id="2">
+            <midi source="1">38</midi>
+        </key>
+        <key id="3">
+            <midi source="1">39</midi>
+        </key>
+        <key id="4">
+            <midi source="1">40</midi>
+        </key>
+        <key id="5">
+            <midi source="1">41</midi>
+        </key>
+        <key id="6">
+            <midi source="1">42</midi>
+        </key>
+        <key id="7">
+            <midi source="1">43</midi>
+        </key>
+        <key id="8">
+            <midi source="1">44</midi>
+        </key>
+        <key id="9">
+            <midi source="1">45</midi>
+        </key>
+        <key id="10">
+            <midi source="1">46</midi>
+        </key>
+        <key id="11">
+            <midi source="1">47</midi>
+        </key>
+        
+    </preset>
+    <preset name="Basyn" mode="g">
         <source id="1" font="1" bank="0" preset="40"/>
-        <keys source="1" tone="1" octave="3" num_keys="12" mode="-8 1 3 5"/>
-    </preset>-->
+        <keys source="1" tone="7" octave="3" num_keys="12" mode="1 3 5"/>
+    </preset>
+    <preset name="Strings G" mode="g">
+        <source id="1" font="1" bank="0" preset="48"/>
+        <keys source="1" tone="7" octave="3" num_keys="12" mode="1 3 5"/>
+    </preset>
+    <preset name="Strings A" mode="g">
+        <source id="1" font="1" bank="0" preset="48"/>
+        <keys source="1" tone="9" octave="3" num_keys="12" mode="1 3 5"/>
+    </preset>
 </config>

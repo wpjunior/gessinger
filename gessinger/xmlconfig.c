@@ -107,11 +107,12 @@ gessinger_xmlconfig_setup_auto_keys(GessingerXmlconfig *self,
   preset->keys = g_malloc0 (sizeof(GessingerPresetKey) * preset->num_keys);
 
   for (i=0; i<preset->num_keys; i++) {
-    key = &preset->keys[i]; //shortcut for current key
+
+    key = &preset->keys[i];
 
     key->id = i;
     key->num_sources = num_notes;
-    key->sources = gessinger_midi_source_new (key->id,
+    key->sources = gessinger_midi_source_new (i,
 					      notes_interval,
 					      num_notes,
 					      tone,
@@ -131,7 +132,7 @@ gessinger_xmlconfig_add_preset(GessingerXmlconfig *self,
   gint i;
 
   preset = gessinger_preset_new();
-
+  
   for (attr=node->properties; attr!=NULL; attr=attr->next) {
     if ((attr->children!=NULL)&&(attr->children->content!=NULL)) {
 
@@ -139,15 +140,13 @@ gessinger_xmlconfig_add_preset(GessingerXmlconfig *self,
 	preset->name=g_strdup(attr->children->content);
 
       else if (g_str_equal(attr->name, "mode")) {
-	if (attr->children->content == "g")
+	if (g_str_equal(attr->children->content,"g")) 
 	  preset->mode = GESSINGER_PRESET_GRAB_MODE;
       }
     }
   }
   if (node->children==NULL) return;
-
-  preset->num_keys = 0;
-
+  
   for (cur_node=node->children; cur_node; cur_node = cur_node->next) {
     if (cur_node->type != XML_ELEMENT_NODE) continue;
     if (g_str_equal(cur_node->name, "source")) {
@@ -174,7 +173,7 @@ gessinger_xmlconfig_add_preset(GessingerXmlconfig *self,
     }
   }
 
-  if ((preset->num_keys > 0)&&(!preset->auto_keys)) {
+  if ((preset->num_keys > 0)&&(preset->auto_keys==0)){
     i = 0;
     preset->keys = g_malloc0 (sizeof(GessingerPresetKey) * preset->num_keys);
 

@@ -42,6 +42,8 @@ enum {
   GESSINGER_JSCONTROL_PROP_NBUTTONS
 };
 
+
+
 struct _GessingerJscontrol
 {
   /*< private >*/
@@ -55,6 +57,17 @@ struct _GessingerJscontrol
   gint event_io;
   gint *buttons;
   gint *axes;
+
+  void (*button_callback) (gint button,
+			   gint state,
+			   gpointer user_data);
+
+  void (*axis_callback) (gint axis_id,
+			 gint value,
+			 gpointer user_data);
+
+  gpointer button_callback_data;
+  gpointer axis_callback_data;
 };
 
 struct _GessingerJscontrolClass
