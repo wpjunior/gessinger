@@ -19,6 +19,7 @@
 #include <gtk/gtk.h>
 #include "gessinger/xmlconfig.h"
 #include "gessinger/midi.h"
+#include "gessinger/font.h"
 
 G_DEFINE_TYPE (GessingerXmlconfig, gessinger_xmlconfig, G_TYPE_OBJECT);
 
@@ -122,6 +123,29 @@ gessinger_xmlconfig_setup_auto_keys(GessingerXmlconfig *self,
 }
 
 static void
+gessinger_xmlconfig_add_font(GessingerXmlconfig *self,
+			     xmlNode            *node)
+{
+  GessingerFont *font;
+  xmlAttr *attr;
+
+  font = gessinger_font_new();
+
+  for (attr=node->properties; attr!=NULL; attr=attr->next) {
+    if ((attr->children!=NULL)&&(attr->children->content!=NULL)) {
+
+      if (g_str_equal(attr->name, "id"))
+	font->id=atoi(attr->children->content);
+
+      else if (g_str_equal(attr->name, "file"))
+	font->file = g_strdup(attr->children->content);
+    }
+  }
+
+  self->list_fonts = g_list_append(self->list_fonts, font);
+}
+
+static void
 gessinger_xmlconfig_add_preset(GessingerXmlconfig *self,
 			       xmlNode            *node)
 {
@@ -134,6 +158,17 @@ gessinger_xmlconfig_add_preset(GessingerXmlconfig *self,
   preset = gessinger_preset_new();
   
   for (attr=node->properties; attr!=NULL; attr=attr->next) {
+    if ((attr->children!=NULL)&&(attr->children->content!=NULL)) {
+
+      if (g_str_equal(attr->name, "name"))
+	preset->name=g_strdup(attr->children->content);
+
+      else if (g_str_equal(attr->name, "mode")) {
+	if (g_str_equal(attr->children->content,"g")) 
+	  preset->mode = GESSINGER_PRESET_GRAB_MODE;
+      }
+    }
+  }for (attr=node->properties; attr!=NULL; attr=attr->next) {
     if ((attr->children!=NULL)&&(attr->children->content!=NULL)) {
 
       if (g_str_equal(attr->name, "name"))
@@ -218,7 +253,9 @@ gessinger_xmlconfig_read_configs(GessingerXmlconfig *self,
   for (cur_node=self->root->children; cur_node; cur_node = cur_node->next) {
     if (cur_node->type == XML_ELEMENT_NODE) {
       if (g_str_equal(cur_node->name, "preset"))
-	    gessinger_xmlconfig_add_preset(self, cur_node);
+	gessinger_xmlconfig_add_preset(self, cur_node);
+      if (g_str_equal(cur_node->name, "font"))
+	gessinger_xmlconfig_add_font(self, cur_node);
     }
   }
 

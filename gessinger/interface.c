@@ -17,12 +17,22 @@
 
 #include <glib.h>
 #include "gessinger/interface.h"
+#include "gessinger/font.h"
 
 G_DEFINE_TYPE (GessingerInterface, gessinger_interface, G_TYPE_OBJECT);
 
 static void
 gessinger_interface_class_init (GessingerInterfaceClass *klass)
 {
+}
+
+static void
+gessinger_interface_load_font(GessingerFont *font,
+			      GessingerInterface *self)
+{
+  fluid_synth_sfload(self->f_synth,
+		     font->file,
+		     0); //TODO: save fid
 }
 
 static void
@@ -38,9 +48,10 @@ gessinger_interface_setup_fluidsynth(GessingerInterface *self)
   fluid_settings_setstr(self->f_settings, "audio.driver", "alsa");
   self->f_adriver = new_fluid_audio_driver(self->f_settings, self->f_synth);
 
-  fluid_synth_sfload(self->f_synth,
-		     "SGM-V2.01.sf2", //TODO READ FONTS
-		     0); //TODO: save fid
+  if (self->config->list_fonts!=NULL)
+    g_list_foreach (self->config->list_fonts,
+		    (GFunc) gessinger_interface_load_font,
+		    self);
 }
 
 static void
@@ -152,6 +163,10 @@ static void gessinger_interface_load_source (gint *id,
 				  source->font,
 				  source->bank,
 				  source->preset);
+
+  fluid_synth_pitch_wheel_sens (self->f_synth,
+				source->id,
+				2);
 
   if (r!= FLUID_OK) g_warning ("Failed to set source to channel %d from"
 			       " Font %d Bank %d and Preset %d",

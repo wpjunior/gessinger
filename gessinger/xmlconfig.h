@@ -43,6 +43,7 @@ struct _GessingerXmlconfig
   xmlDoc *doc;
   xmlNode *root;
   GList *list_presets;
+  GList *list_fonts;
 };
 
 struct _GessingerXmlconfigClass

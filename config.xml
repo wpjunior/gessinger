@@ -1,4 +1,5 @@
 <config>
+    <font id="1" file="FluidR3_GM.sf2"/>
     <preset name="Bass" mode="s">
         <source id="1" font="1" bank="0" preset="40"/>
         <source id="2" font="1" bank="0" preset="39"/>
@@ -66,8 +67,8 @@
         </key>
         
     </preset>
-    <preset name="Bass2" mode="g">
-        <source id="1" font="1" bank="0" preset="39"/>
+    <preset name="Ultra Bass" mode="g">
+        <source id="1" font="1" bank="0" preset="40"/>
         <key id="0">
             <midi source="1">36</midi>
         </key>
@@ -81,28 +82,68 @@
             <midi source="1">39</midi>
         </key>
         <key id="4">
-            <midi source="1">40</midi>
+            <midi source="1">28</midi>
         </key>
         <key id="5">
-            <midi source="1">41</midi>
+            <midi source="1">29</midi>
         </key>
         <key id="6">
-            <midi source="1">42</midi>
+            <midi source="1">30</midi>
         </key>
         <key id="7">
-            <midi source="1">43</midi>
+            <midi source="1">31</midi>
         </key>
         <key id="8">
-            <midi source="1">44</midi>
+            <midi source="1">32</midi>
         </key>
         <key id="9">
-            <midi source="1">45</midi>
+            <midi source="1">33</midi>
         </key>
         <key id="10">
-            <midi source="1">46</midi>
+            <midi source="1">34</midi>
         </key>
         <key id="11">
-            <midi source="1">47</midi>
+            <midi source="1">35</midi>
+        </key>
+        
+    </preset>
+     <preset name="Bass 4" mode="g">
+        <source id="1" font="1" bank="0" preset="38"/>
+        <key id="0">
+            <midi source="1">48</midi>
+        </key>
+        <key id="1">
+            <midi source="1">49</midi>
+        </key>
+        <key id="2">
+            <midi source="1">50</midi>
+        </key>
+        <key id="3">
+            <midi source="1">51</midi>
+        </key>
+        <key id="4">
+            <midi source="1">52</midi>
+        </key>
+        <key id="5">
+            <midi source="1">53</midi>
+        </key>
+        <key id="6">
+            <midi source="1">54</midi>
+        </key>
+        <key id="7">
+            <midi source="1">55</midi>
+        </key>
+        <key id="8">
+            <midi source="1">56</midi>
+        </key>
+        <key id="9">
+            <midi source="1">57</midi>
+        </key>
+        <key id="10">
+            <midi source="1">58</midi>
+        </key>
+        <key id="11">
+            <midi source="1">59</midi>
         </key>
         
     </preset>
@@ -189,6 +230,10 @@
     <preset name="Basyn" mode="g">
         <source id="1" font="1" bank="0" preset="40"/>
         <keys source="1" tone="7" octave="3" num_keys="12" mode="1 3 5"/>
+    </preset>
+    <preset name="Strings D" mode="g">
+        <source id="1" font="1" bank="0" preset="48"/>
+        <keys source="1" tone="2" octave="3" num_keys="12" mode="1 3 5"/>
     </preset>
     <preset name="Strings G" mode="g">
         <source id="1" font="1" bank="0" preset="48"/>

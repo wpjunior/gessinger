@@ -37,6 +37,8 @@ static void
 gessinger_gui_init (GessingerGui *self)
 {
 
+  GObject *obj;
+
   self->builder = gtk_builder_new ();
 
   gtk_builder_add_from_file(self->builder,
@@ -53,7 +55,6 @@ gessinger_gui_init (GessingerGui *self)
 
   gtk_tree_view_set_model(GTK_TREE_VIEW(self->treeview),
 			  GTK_TREE_MODEL(self->liststore));
-  gtk_builder_connect_signals(self->builder, self);
 }
 
 void gessinger_gui_show (GessingerGui *self)
@@ -91,9 +92,76 @@ void gessinger_gui_show_about (GtkWidget *widget, GessingerGui *self)
 static void
 gessinger_gui_load_configs (GessingerGui *self)
 {
+  GObject *obj;
   float f;
+  int i, r;
+  double d;
+  /* Gain */
   f = fluid_synth_get_gain(self->interface->f_synth);
-  g_print ("loading configs %f\n", f);
+  obj = gtk_builder_get_object(self->builder, "gain");
+  gtk_adjustment_set_value (GTK_ADJUSTMENT(obj), f*100);
+
+  /* Reverb */
+  r = fluid_settings_getint(self->interface->f_settings,
+			    "synth.reverb.active",
+			    &i);
+  if (r) {
+    obj = gtk_builder_get_object(self->builder, "reverb_table");
+    gtk_widget_set_sensitive(GTK_WIDGET(obj), i);
+
+    obj = gtk_builder_get_object(self->builder, "reverb_button");
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(obj), i);
+  }
+
+  d = fluid_synth_get_reverb_roomsize(self->interface->f_synth);
+  obj = gtk_builder_get_object(self->builder, "reverb_room");
+  gtk_adjustment_set_value(GTK_ADJUSTMENT(obj), d);
+
+  d = fluid_synth_get_reverb_damp(self->interface->f_synth);
+  obj = gtk_builder_get_object(self->builder, "reverb_damp");
+  gtk_adjustment_set_value(GTK_ADJUSTMENT(obj), d);
+
+  d = fluid_synth_get_reverb_level(self->interface->f_synth);
+  obj = gtk_builder_get_object(self->builder, "reverb_level");
+  gtk_adjustment_set_value(GTK_ADJUSTMENT(obj), d);
+
+  d = fluid_synth_get_reverb_width(self->interface->f_synth);
+  obj = gtk_builder_get_object(self->builder, "reverb_width");
+  gtk_adjustment_set_value(GTK_ADJUSTMENT(obj), d);
+
+  /* Chorus */
+  r = fluid_settings_getint(self->interface->f_settings,
+			    "synth.chorus.active",
+			    &i);
+  if (r) {
+    obj = gtk_builder_get_object(self->builder, "chorus_table");
+    gtk_widget_set_sensitive(GTK_WIDGET(obj), i);
+
+    obj = gtk_builder_get_object(self->builder, "chorus_button");
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(obj), i);
+  }
+
+  d = fluid_synth_get_chorus_nr(self->interface->f_synth);
+  obj = gtk_builder_get_object(self->builder, "chorus_n");
+  gtk_adjustment_set_value(GTK_ADJUSTMENT(obj), d);
+
+  d = fluid_synth_get_chorus_level(self->interface->f_synth);
+  obj = gtk_builder_get_object(self->builder, "chorus_level");
+  gtk_adjustment_set_value(GTK_ADJUSTMENT(obj), d);
+
+  d = fluid_synth_get_chorus_speed_Hz(self->interface->f_synth);
+  obj = gtk_builder_get_object(self->builder, "chorus_speed");
+  gtk_adjustment_set_value(GTK_ADJUSTMENT(obj), d);
+
+  d = fluid_synth_get_chorus_depth_ms(self->interface->f_synth);
+  obj = gtk_builder_get_object(self->builder, "chorus_depth");
+  gtk_adjustment_set_value(GTK_ADJUSTMENT(obj), d);
+
+  i = fluid_synth_get_chorus_type(self->interface->f_synth);
+  if (i==FLUID_CHORUS_MOD_TRIANGLE) {
+    obj = gtk_builder_get_object(self->builder, "chorus_triangle");
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(obj), TRUE);
+  }
 }
 
 GessingerGui *
@@ -111,6 +179,8 @@ gessinger_gui_new (GessingerInterface *interface)
 
   gessinger_gui_load_configs(obj);
 
+  /* connecting signals */
+  gtk_builder_connect_signals(obj->builder, obj);
   return obj;
 }
 
@@ -150,3 +220,93 @@ void treeview_row_activated_cb (GtkTreeView       *tree_view,
 			preset->name);
   }
 }
+
+void gain_value_changed_cb(GtkAdjustment *adjustment,
+			   GessingerGui *self)
+{
+  float f;
+  f = gtk_adjustment_get_value(adjustment);
+  fluid_synth_set_gain(self->interface->f_synth, f/100);
+}
+
+void reverb_button_toggled_cb(GtkToggleButton *button,
+			      GessingerGui    *self)
+{
+  int i;
+  GObject *obj;
+
+  i = gtk_toggle_button_get_active(button);
+
+  fluid_settings_setint (self->interface->f_settings,
+			 "synth.reverb.active", i);
+
+  fluid_synth_set_reverb_on (self->interface->f_synth, i);
+  obj = gtk_builder_get_object(self->builder, "reverb_table");
+  gtk_widget_set_sensitive(GTK_WIDGET(obj), i);
+}
+void chorus_button_toggled_cb(GtkToggleButton *button,
+			      GessingerGui    *self)
+{
+  int i;
+  GObject *obj;
+
+  i = gtk_toggle_button_get_active(button);
+
+  fluid_settings_setint (self->interface->f_settings,
+			 "synth.chorus.active", i);
+
+  fluid_synth_set_chorus_on (self->interface->f_synth, i);
+  obj = gtk_builder_get_object(self->builder, "chorus_table");
+  gtk_widget_set_sensitive(GTK_WIDGET(obj), i);
+}
+
+void on_reverb_value_changed(GtkWidget    *widget,
+			     GessingerGui *self)
+{
+  int r;
+  double room, damp, level, width;
+  GObject *obj;
+
+  obj = gtk_builder_get_object(self->builder, "reverb_room");
+  room = gtk_adjustment_get_value(GTK_ADJUSTMENT(obj));
+
+  obj = gtk_builder_get_object(self->builder, "reverb_damp");
+  damp = gtk_adjustment_get_value(GTK_ADJUSTMENT(obj));
+
+  obj = gtk_builder_get_object(self->builder, "reverb_level");
+  level = gtk_adjustment_get_value(GTK_ADJUSTMENT(obj));
+
+  obj = gtk_builder_get_object(self->builder, "reverb_width");
+  width = gtk_adjustment_get_value(GTK_ADJUSTMENT(obj));
+  fluid_synth_set_reverb(self->interface->f_synth, room,
+			     damp, width, level);
+}
+void on_chorus_value_changed(GtkWidget    *widget,
+			     GessingerGui *self)
+{
+  int type, n;
+  double level, speed, depth;
+  GObject *obj;
+
+  obj = gtk_builder_get_object(self->builder, "chorus_n");
+  n = gtk_adjustment_get_value(GTK_ADJUSTMENT(obj));
+
+  obj = gtk_builder_get_object(self->builder, "chorus_level");
+  level = gtk_adjustment_get_value(GTK_ADJUSTMENT(obj));
+
+  obj = gtk_builder_get_object(self->builder, "chorus_speed");
+  speed = gtk_adjustment_get_value(GTK_ADJUSTMENT(obj));
+
+  obj = gtk_builder_get_object(self->builder, "chorus_depth");
+  depth = gtk_adjustment_get_value(GTK_ADJUSTMENT(obj));
+
+  obj = gtk_builder_get_object(self->builder, "chorus_triangle");
+  type = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(obj));
+
+  g_debug("set_chorus n=%d level=%0.2f speed=%0.2f depth=%0.2f type=%d",
+	  n, level, speed, depth, type);
+
+  fluid_synth_set_chorus(self->interface->f_synth, n, level,
+			 speed, depth, type);
+}
+
