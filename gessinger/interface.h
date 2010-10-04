@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <fluidsynth.h>
-#include <gessinger/xmlconfig.h>
+#include <gessinger/presets_config.h>
 #include <gessinger/jscontrol.h>
 #include <gessinger/preset.h>
 
@@ -41,13 +41,15 @@ struct _GessingerInterface
 {
   /*< private >*/
   GObject parent;
-  GessingerXmlconfig *config;
+  GessingerPresetsConfig *presets_config;
   GessingerJscontrol *js_control;
   GessingerPreset *active_preset;
   fluid_settings_t *f_settings;
   fluid_synth_t *f_synth;
   fluid_audio_driver_t *f_adriver;
   GessingerPresetKey *grabed_key;
+  GKeyFile *main_settings;
+  gint active_preset_id;
 };
 
 struct _GessingerInterfaceClass
@@ -57,11 +59,13 @@ struct _GessingerInterfaceClass
 };
 
 GType gessinger_interface_get_type (void) G_GNUC_CONST;
-GessingerInterface *gessinger_interface_new (GessingerXmlconfig *config,
+
+GessingerInterface *gessinger_interface_new (GessingerPresetsConfig *presets_config,
 					     GessingerJscontrol *jscontrol);
 
 gboolean gessinger_interface_set_preset (GessingerInterface *self,
-					 GessingerPreset *preset);
+					 GessingerPreset    *preset,
+					 gboolean            save_settings);
 
 G_END_DECLS
 

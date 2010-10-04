@@ -15,6 +15,7 @@
   </object>
   <object class="GtkWindow" id="window">
     <property name="title" translatable="yes">Gessinger</property>
+    <signal name="delete_event" handler="gessinger_quit"/>
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
@@ -574,6 +575,7 @@
                                     <property name="use_underline">True</property>
                                     <property name="draw_indicator">True</property>
                                     <property name="group">chorus_sine</property>
+                                    <signal name="toggled" handler="on_chorus_value_changed"/>
                                   </object>
                                   <packing>
                                     <property name="position">2</property>

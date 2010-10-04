@@ -15,24 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _GESSINGER_FONT_H
-#define _GESSINGER_FONT_H
+#ifndef _GESSINGER_PRESETSCONFIG_H
+#define _GESSINGER_PRESETSCONFIG_H
 
 #define _GNU_SOURCE
 #include <glib.h>
-#include <glib-object.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 
-typedef struct _GessingerFont GessingerFont;
+typedef struct _GessingerPresetsConfig GessingerPresetsConfig;
 
-struct _GessingerFont
+struct _GessingerPresetsConfig
 {
-  gint id;
-  gchar *file;
-  gint loaded;
-  gint load_id;
+  gchar *config_file;
+  xmlDoc *doc;
+  xmlNode *root;
+  GList *list_presets;
+  GList *list_fonts;
 };
 
+GessingerPresetsConfig *gessinger_presets_config_new (gchar *config_file,
+						      GError **error);
 
-GessingerFont *gessinger_font_new (void);
-
-#endif /* _GESSINGER_FONT_H */
+#endif /* _GESSINGER_PRESETSCONFIG_H */

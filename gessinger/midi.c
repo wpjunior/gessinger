@@ -53,7 +53,7 @@ GessingerPresetKeySource* gessinger_midi_source_new (gint n_button,
   for (i=0; i<num_notes; i++) {
     note_octave = octave;
     obj[i].source_id = source;
-
+    obj[i].vel = 127; //default
     if (!is_accident) {
       note_pos = get_note_pos(start_scale);
       if (notes_interval[i] >= 1) r = note_pos + notes_interval[i]-1;
@@ -68,7 +68,7 @@ GessingerPresetKeySource* gessinger_midi_source_new (gint n_button,
       }
       r = r%7;
       obj[i].midi_code = ((note_octave+1)*12)+escale[r];
-      g_print ("b: %d -> %d\n", n_button, obj[i].midi_code);
+      //g_print ("b: %d -> %d\n", n_button, obj[i].midi_code);
     }
   }
 

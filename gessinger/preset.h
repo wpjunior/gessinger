@@ -25,6 +25,7 @@ typedef struct _GessingerPresetKeySource GessingerPresetKeySource;
 
 struct _GessingerPreset
 {
+  gint id;
   gchar *name;
   gint mode;
   GHashTable *sources;
@@ -52,6 +53,7 @@ struct _GessingerPresetKeySource
 {
   gint source_id;
   gint midi_code;
+  gint vel;
 };
 
 enum {

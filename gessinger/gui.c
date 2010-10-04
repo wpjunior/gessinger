@@ -67,12 +67,22 @@ void gessinger_gui_load_preset (GessingerPreset *preset,
 				GessingerGui    *self)
 {
   GtkTreeIter iter;
+  GtkTreePath *path;
   gtk_list_store_append (self->liststore, &iter);
   gtk_list_store_set (self->liststore, &iter,
 		      GESSINGER_COLUMN_PRESET, preset,
 		      GESSINGER_COLUMN_PRESET_NAME, preset->name,
 		      -1);
-  g_print ("%s\n", preset->name);
+
+  if (preset->id == self->interface->active_preset_id) {
+    path = gtk_tree_model_get_path (GTK_TREE_MODEL(self->liststore), &iter);
+
+    if (gessinger_interface_set_preset(self->interface, preset, FALSE)) {
+      gtk_tree_view_set_cursor (GTK_TREE_VIEW(self->treeview), path, NULL, FALSE);
+      gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(self->builder, "active_preset")),
+			  preset->name);
+    }
+  }
 }
 
 void gessinger_gui_new_clicked (GtkWidget *widget, GessingerGui *self)
@@ -172,8 +182,8 @@ gessinger_gui_new (GessingerInterface *interface)
   obj->interface = interface;
 
   /* Load Presets */
-  if (obj->interface->config->list_presets!=NULL)
-    g_list_foreach(g_list_first(obj->interface->config->list_presets),
+  if (interface->presets_config->list_presets!=NULL)
+    g_list_foreach(g_list_first(interface->presets_config->list_presets),
 		   (GFunc) gessinger_gui_load_preset,
 		   obj);
 
@@ -215,7 +225,7 @@ void treeview_row_activated_cb (GtkTreeView       *tree_view,
   gtk_tree_model_get (GTK_TREE_MODEL(self->liststore), &iter,
 		      GESSINGER_COLUMN_PRESET, &preset,
 		      -1);
-  if ((preset!=NULL)&&(gessinger_interface_set_preset(self->interface, preset))) {
+  if ((preset!=NULL)&&(gessinger_interface_set_preset(self->interface, preset, TRUE))) {
     gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(self->builder, "active_preset")),
 			preset->name);
   }
@@ -227,6 +237,8 @@ void gain_value_changed_cb(GtkAdjustment *adjustment,
   float f;
   f = gtk_adjustment_get_value(adjustment);
   fluid_synth_set_gain(self->interface->f_synth, f/100);
+  g_key_file_set_double (self->interface->main_settings,
+			 "general", "gain", f);
 }
 
 void reverb_button_toggled_cb(GtkToggleButton *button,
@@ -240,6 +252,8 @@ void reverb_button_toggled_cb(GtkToggleButton *button,
   fluid_settings_setint (self->interface->f_settings,
 			 "synth.reverb.active", i);
 
+  g_key_file_set_boolean(self->interface->main_settings,
+			 "reverb", "active", i);
   fluid_synth_set_reverb_on (self->interface->f_synth, i);
   obj = gtk_builder_get_object(self->builder, "reverb_table");
   gtk_widget_set_sensitive(GTK_WIDGET(obj), i);
@@ -255,6 +269,8 @@ void chorus_button_toggled_cb(GtkToggleButton *button,
   fluid_settings_setint (self->interface->f_settings,
 			 "synth.chorus.active", i);
 
+  g_key_file_set_boolean(self->interface->main_settings,
+			 "chorus", "active", i);
   fluid_synth_set_chorus_on (self->interface->f_synth, i);
   obj = gtk_builder_get_object(self->builder, "chorus_table");
   gtk_widget_set_sensitive(GTK_WIDGET(obj), i);
@@ -278,6 +294,13 @@ void on_reverb_value_changed(GtkWidget    *widget,
 
   obj = gtk_builder_get_object(self->builder, "reverb_width");
   width = gtk_adjustment_get_value(GTK_ADJUSTMENT(obj));
+
+  /* Save too in config file */
+  g_key_file_set_double (self->interface->main_settings, "reverb", "room", room);
+  g_key_file_set_double (self->interface->main_settings, "reverb", "damp", damp);
+  g_key_file_set_double (self->interface->main_settings, "reverb", "level", level);
+  g_key_file_set_double (self->interface->main_settings, "reverb", "width", width);
+
   fluid_synth_set_reverb(self->interface->f_synth, room,
 			     damp, width, level);
 }
@@ -303,10 +326,24 @@ void on_chorus_value_changed(GtkWidget    *widget,
   obj = gtk_builder_get_object(self->builder, "chorus_triangle");
   type = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(obj));
 
-  g_debug("set_chorus n=%d level=%0.2f speed=%0.2f depth=%0.2f type=%d",
-	  n, level, speed, depth, type);
+  g_key_file_set_integer (self->interface->main_settings, "chorus", "n", n);
+  g_key_file_set_double (self->interface->main_settings, "chorus", "level", level);
+  g_key_file_set_double (self->interface->main_settings, "chorus", "speed", speed);
+  g_key_file_set_double (self->interface->main_settings, "chorus", "n", depth);
+  g_key_file_set_integer (self->interface->main_settings, "chorus", "mode", type);
 
   fluid_synth_set_chorus(self->interface->f_synth, n, level,
 			 speed, depth, type);
 }
 
+
+
+gboolean gessinger_quit (GtkWidget *widget,
+			 GdkEvent  *event,
+			 GessingerGui *self)
+{
+  gessinger_interface_save_configs(self->interface);
+  gtk_main_quit();
+
+  return FALSE;
+}

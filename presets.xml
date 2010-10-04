@@ -1,13 +1,15 @@
 <config>
-    <font id="1" file="FluidR3_GM.sf2"/>
+    <!--<font id="1" file="FluidR3_GM.sf2"/>-->
+    <font id="2" file="SGM-V2.01.sf2"/>
+    <font id="3" file="dx7.sf2"/>
     <preset name="Bass" mode="s">
         <source id="1" font="1" bank="0" preset="40"/>
         <source id="2" font="1" bank="0" preset="39"/>
         <key id="0">
             <midi source="2">36</midi>
-            <midi source="1">60</midi>
-            <midi source="1">64</midi>
-            <midi source="1">67</midi>
+            <midi source="1" vel="30">60</midi>
+            <midi source="1" vel="30">64</midi>
+            <midi source="1" vel="30">67</midi>
         </key>
         <key id="1">
             <midi source="1">36</midi>
@@ -68,7 +70,7 @@
         
     </preset>
     <preset name="Ultra Bass" mode="g">
-        <source id="1" font="1" bank="0" preset="40"/>
+        <source id="1" font="1" bank="0" preset="39"/>
         <key id="0">
             <midi source="1">36</midi>
         </key>
@@ -242,5 +244,9 @@
     <preset name="Strings A" mode="g">
         <source id="1" font="1" bank="0" preset="48"/>
         <keys source="1" tone="9" octave="3" num_keys="12" mode="1 3 5"/>
+    </preset>
+    <preset name="Teste" mode="s">
+        <source id="1" font="2" bank="0" preset="14"/>
+        <keys source="1" tone="0" octave="3" num_keys="12" mode="1 3 5"/>
     </preset>
 </config>

@@ -42,7 +42,13 @@ enum {
   GESSINGER_JSCONTROL_PROP_NBUTTONS
 };
 
+typedef void (*GessingerButtonCallback)(gint button,
+					gint state,
+					gpointer user_data);
 
+typedef void (*GessingerAxisCallback) (gint axis_id,
+				       gint value,
+				       gpointer user_data);
 
 struct _GessingerJscontrol
 {

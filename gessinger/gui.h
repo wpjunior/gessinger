@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <glib-object.h>
-#include "gessinger/xmlconfig.h"
+#include "gessinger/presets_config.h"
 #include "gessinger/interface.h"
 
 G_BEGIN_DECLS

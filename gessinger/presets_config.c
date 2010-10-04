@@ -17,27 +17,12 @@
 
 #include <glib.h>
 #include <gtk/gtk.h>
-#include "gessinger/xmlconfig.h"
+#include "gessinger/presets_config.h"
 #include "gessinger/midi.h"
 #include "gessinger/font.h"
 
-G_DEFINE_TYPE (GessingerXmlconfig, gessinger_xmlconfig, G_TYPE_OBJECT);
-
 static void
-gessinger_xmlconfig_class_init (GessingerXmlconfigClass *klass)
-{
-}
-
-static void
-gessinger_xmlconfig_init (GessingerXmlconfig *self)
-{
-  self = GESSINGER_XMLCONFIG (self);
-  self->doc = NULL;
-  self->root = NULL;
-}
-
-static void
-gessinger_xmlconfig_setup_key(GessingerXmlconfig *self,
+gessinger_presets_config_setup_key(GessingerPresetsConfig *self,
 			      GessingerPresetKey *key,
 			      xmlNode            *node)
 {
@@ -61,9 +46,12 @@ gessinger_xmlconfig_setup_key(GessingerXmlconfig *self,
       if (cur_node->type != XML_ELEMENT_NODE) continue;
       if (g_str_equal(cur_node->name, "midi")) {
 
+	key->sources[i].vel = 127; //default vel
+
 	for (attr=cur_node->properties; attr!=NULL; attr=attr->next) {
 	  if ((attr->children==NULL)||(attr->children->content==NULL)) continue;
 	  else if (g_str_equal(attr->name, "source")) key->sources[i].source_id = atoi(attr->children->content);
+	  else if (g_str_equal(attr->name, "vel")) key->sources[i].vel = atoi(attr->children->content);
 	}
 	key->sources[i].midi_code = atoi(cur_node->children->content);
 	i++;
@@ -73,7 +61,7 @@ gessinger_xmlconfig_setup_key(GessingerXmlconfig *self,
 }
 
 static void
-gessinger_xmlconfig_setup_auto_keys(GessingerXmlconfig *self,
+gessinger_presets_config_setup_auto_keys(GessingerPresetsConfig *self,
 				    GessingerPreset    *preset,
 				    xmlNode            *node)
 {
@@ -123,7 +111,7 @@ gessinger_xmlconfig_setup_auto_keys(GessingerXmlconfig *self,
 }
 
 static void
-gessinger_xmlconfig_add_font(GessingerXmlconfig *self,
+gessinger_presets_config_add_font(GessingerPresetsConfig *self,
 			     xmlNode            *node)
 {
   GessingerFont *font;
@@ -146,17 +134,19 @@ gessinger_xmlconfig_add_font(GessingerXmlconfig *self,
 }
 
 static void
-gessinger_xmlconfig_add_preset(GessingerXmlconfig *self,
-			       xmlNode            *node)
+gessinger_presets_config_add_preset(GessingerPresetsConfig *self,
+				    xmlNode            *node)
 {
   xmlNode *cur_node;
   xmlAttr *attr;
   GessingerPreset *preset;
   GessingerPresetSource *source;
   gint i;
+  static int cur_id=0;
 
   preset = gessinger_preset_new();
-  
+  preset->id = cur_id; cur_id++;
+
   for (attr=node->properties; attr!=NULL; attr=attr->next) {
     if ((attr->children!=NULL)&&(attr->children->content!=NULL)) {
 
@@ -200,7 +190,7 @@ gessinger_xmlconfig_add_preset(GessingerXmlconfig *self,
 
     else if (g_str_equal(cur_node->name, "keys")) {
       preset->auto_keys = 1;
-      gessinger_xmlconfig_setup_auto_keys(self, preset, cur_node);
+      gessinger_presets_config_setup_auto_keys(self, preset, cur_node);
     }
 
     else if (g_str_equal(cur_node->name, "key")) {
@@ -220,24 +210,25 @@ gessinger_xmlconfig_add_preset(GessingerXmlconfig *self,
 	  if ((attr->children==NULL)||(attr->children->content==NULL)) continue;
 	  else if (g_str_equal(attr->name, "id")) preset->keys[i].id = atoi(attr->children->content);
 	}
-	gessinger_xmlconfig_setup_key(self, &preset->keys[i], cur_node);
+	gessinger_presets_config_setup_key(self, &preset->keys[i], cur_node);
 	i++;
       }
     }
   }
 
+
   self->list_presets = g_list_append(self->list_presets, preset);
 }
 
 static int
-gessinger_xmlconfig_read_configs(GessingerXmlconfig *self,
+gessinger_presets_config_read_configs(GessingerPresetsConfig *self,
 				 GError **error)
 {
   xmlNode *cur_node;
   
   self->doc = xmlReadFile(self->config_file, NULL, 0);
   if (self->doc == NULL) {
-    *error = g_error_new (g_quark_from_static_string("GessingerXmlConfigError"),
+    *error = g_error_new (g_quark_from_static_string("GessingerPresetsConfigError"),
 			 1, "Failed to read config file");
     return -1;
   }
@@ -253,34 +244,23 @@ gessinger_xmlconfig_read_configs(GessingerXmlconfig *self,
   for (cur_node=self->root->children; cur_node; cur_node = cur_node->next) {
     if (cur_node->type == XML_ELEMENT_NODE) {
       if (g_str_equal(cur_node->name, "preset"))
-	gessinger_xmlconfig_add_preset(self, cur_node);
+	gessinger_presets_config_add_preset(self, cur_node);
       if (g_str_equal(cur_node->name, "font"))
-	gessinger_xmlconfig_add_font(self, cur_node);
+	gessinger_presets_config_add_font(self, cur_node);
     }
   }
 
 }
 
-GessingerXmlconfig *
-gessinger_xmlconfig_new (gchar *config_file)
+GessingerPresetsConfig *
+gessinger_presets_config_new (gchar *config_file, GError **error)
 {
-  GessingerXmlconfig *obj;
+  GessingerPresetsConfig *obj;
   GtkWidget *dialog;
-  GError *error = NULL;
 
-  obj = g_object_new (GESSINGER_XMLCONFIG_TYPE, NULL);
+  obj = g_malloc0(sizeof(GessingerPresetsConfig));
   obj->config_file = config_file;
-  gessinger_xmlconfig_read_configs(obj, &error);
-
-  if (error!=NULL) {
-    dialog = gtk_message_dialog_new (NULL,
-				     GTK_DIALOG_DESTROY_WITH_PARENT,
-				     GTK_MESSAGE_ERROR,
-				     GTK_BUTTONS_CLOSE,
-				     error->message);
-    gtk_dialog_run (GTK_DIALOG (dialog));
-    exit(1);
-  }
+  gessinger_presets_config_read_configs(obj, error);
 
   return obj;
 }
