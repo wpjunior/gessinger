@@ -2,7 +2,7 @@
     <!--<font id="1" file="FluidR3_GM.sf2"/>-->
     <font id="2" file="SGM-V2.01.sf2"/>
     <font id="3" file="dx7.sf2"/>
-    <preset name="Bass" mode="s">
+    <preset name="Bass and Strings C" mode="g">
         <source id="1" font="1" bank="0" preset="40"/>
         <source id="2" font="1" bank="0" preset="39"/>
         <key id="0">
@@ -17,9 +17,9 @@
         </key>
         <key id="2">
             <midi source="2">38</midi>
-            <midi source="1">62</midi>
-            <midi source="1">65</midi>
-            <midi source="1">69</midi>
+            <midi source="1" vel="30">62</midi>
+            <midi source="1" vel="30">65</midi>
+            <midi source="1" vel="30">69</midi>
         </key>
         <key id="3">
             <midi source="1">36</midi>
@@ -27,15 +27,15 @@
         </key>
         <key id="4">
             <midi source="2">40</midi>
-            <midi source="1">64</midi>
-            <midi source="1">67</midi>
-            <midi source="1">71</midi>
+            <midi source="1" vel="30">64</midi>
+            <midi source="1" vel="30">67</midi>
+            <midi source="1" vel="30">71</midi>
         </key>
         <key id="5">
             <midi source="2">41</midi>
-            <midi source="1">65</midi>
-            <midi source="1">69</midi>
-            <midi source="1">72</midi>
+            <midi source="1" vel="30">65</midi>
+            <midi source="1" vel="30">69</midi>
+            <midi source="1" vel="30">72</midi>
         </key>
         <key id="6">
             <midi source="1">36</midi>
@@ -43,9 +43,9 @@
         </key>
         <key id="7">
             <midi source="2">43</midi>
-            <midi source="1">67</midi>
-            <midi source="1">71</midi>
-            <midi source="1">74</midi>
+            <midi source="1" vel="30">67</midi>
+            <midi source="1" vel="30">71</midi>
+            <midi source="1" vel="30">74</midi>
         </key>
         <key id="8">
             <midi source="1">36</midi>
@@ -53,9 +53,9 @@
         </key>
         <key id="9">
             <midi source="2">45</midi>
-            <midi source="1">69</midi>
-            <midi source="1">72</midi>
-            <midi source="1">76</midi>
+            <midi source="1" vel="30">69</midi>
+            <midi source="1" vel="30">72</midi>
+            <midi source="1" vel="30">76</midi>
         </key>
         <key id="10">
             <midi source="1">36</midi>
@@ -63,9 +63,9 @@
         </key>
         <key id="7">
             <midi source="2">47</midi>
-            <midi source="1">69</midi>
-            <midi source="1">73</midi>
-            <midi source="1">77</midi>
+            <midi source="1" vel="30">69</midi>
+            <midi source="1" vel="30">73</midi>
+            <midi source="1" vel="30">77</midi>
         </key>
         
     </preset>

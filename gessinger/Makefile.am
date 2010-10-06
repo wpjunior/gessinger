@@ -30,7 +30,11 @@ bin_PROGRAMS =					\
 gessinger_CPPFLAGS =			\
 	-DDATADIR=\""$(datadir)"\"			\
 	-I../ \
-	$(GESSINGER_CFLAGS)				
+	$(GESSINGER_CFLAGS)		
+
+gessinger_LDFLAGS = \
+    $(GESSINGER_CFLAGS)	\
+    -Wl, --export-dynamic	
 
 gessinger_SOURCES =			\
 	font.c \

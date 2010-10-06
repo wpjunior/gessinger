@@ -720,6 +720,7 @@
                         </child>
                       </object>
                       <packing>
+                        <property name="expand">False</property>
                         <property name="pack_type">end</property>
                         <property name="position">1</property>
                       </packing>
@@ -755,6 +756,7 @@
   </object>
   <object class="GtkAboutDialog" id="aboutdialog">
     <property name="border_width">5</property>
+    <property name="title" translatable="yes">About Gessinger</property>
     <property name="modal">True</property>
     <property name="window_position">center</property>
     <property name="type_hint">dialog</property>
@@ -762,6 +764,8 @@
     <property name="has_separator">False</property>
     <property name="program_name">Gessinger</property>
     <property name="version">0.1</property>
+    <property name="copyright" translatable="yes">Wilson PInto J&#xFA;nior 2010</property>
+    <property name="comments" translatable="yes">Interface for Joystick Bass Pedalboard</property>
     <property name="authors">Wilson Pinto J&#xFA;nior &lt;wilsonpjunior@gmail.com</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">

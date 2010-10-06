@@ -31,7 +31,8 @@ FLUID_REQUIRED=1.1.1
 PKG_CHECK_MODULES(GESSINGER, [
     gtk+-2.0 >= $GTK_REQUIRED,
     fluidsynth >= $FLUID_REQUIRED,
-    libxml-2.0 >= 2.7
+    libxml-2.0 >= 2.7,
+    gmodule-export-2.0
 ])
 
 AC_SUBST(GESSINGER_CFLAGS)

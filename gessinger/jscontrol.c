@@ -51,11 +51,12 @@ gessinger_jscontrol_do_io (GIOChannel *source,
 {
   static struct js_event js;
 
-  if (condition==G_IO_HUP) {
+  if (condition & G_IO_HUP) {
     g_warning ("Joystick unpluged"); //TODO CallInterface
+    //TODO: replug joystick
     return FALSE;
   }
-  else if (condition==G_IO_ERR) {
+  else if (condition & G_IO_ERR) {
     g_warning ("Joystick error"); //TODO CallInterface
     return FALSE;
   }
@@ -65,14 +66,22 @@ gessinger_jscontrol_do_io (GIOChannel *source,
   if (js.type==JS_EVENT_BUTTON) {
     self->buttons[js.number] = js.value;
     (* self->button_callback) (js.number, js.value, self->button_callback_data);
+    return TRUE;
   }
 
   else if (js.type==JS_EVENT_AXIS) {
     self->axes[js.number] = js.value;
     (* self->axis_callback) (js.number, js.value, self->axis_callback_data);
+    return TRUE;
   }
 
-  return TRUE;
+  else if (js.type & JS_EVENT_INIT)
+    return TRUE;
+
+  else {
+    g_print ("break %d %d", condition, js.type);
+    return FALSE;
+}
 }
 
 static void
