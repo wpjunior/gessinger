@@ -27,6 +27,8 @@ enum {
 G_DEFINE_TYPE (GessingerGui, gessinger_gui, G_TYPE_OBJECT);
 
 void gessinger_gui_draw_keyboard(GessingerGui *self);
+void gessinger_gui_next_preset_cb(GessingerGui *self);
+void gessinger_gui_prev_preset_cb(GessingerGui *self);
 
 static void
 gessinger_gui_class_init (GessingerGuiClass *klass)
@@ -180,6 +182,13 @@ gessinger_gui_new (GessingerInterface *interface)
   GessingerGui *obj;
   obj = g_object_new (GESSINGER_GUI_TYPE, NULL);
   obj->interface = interface;
+
+  /* Next and Prev callbacks from interface */
+  interface->next_preset_callback = gessinger_gui_next_preset_cb;
+  interface->prev_preset_callback = gessinger_gui_prev_preset_cb;
+
+  interface->next_preset_callback_data = obj;
+  interface->prev_preset_callback_data = obj;
 
   /* Load Presets */
   if (interface->presets_config->list_presets!=NULL)
@@ -336,7 +345,31 @@ void on_chorus_value_changed(GtkWidget    *widget,
 			 speed, depth, type);
 }
 
+void gessinger_gui_next_preset_cb (GessingerGui *self)
+{
+  GtkTreePath *path = NULL;
 
+  gtk_tree_view_get_cursor (GTK_TREE_VIEW (self->treeview), &path, NULL);
+
+  if (path==NULL) return;
+
+  gtk_tree_path_next (path); //set next path
+  gtk_tree_view_set_cursor(GTK_TREE_VIEW(self->treeview), path, NULL, FALSE);
+  gtk_tree_view_row_activated (GTK_TREE_VIEW (self->treeview), path, NULL);
+}
+
+void gessinger_gui_prev_preset_cb(GessingerGui *self)
+{
+  GtkTreePath *path = NULL;
+
+  gtk_tree_view_get_cursor (GTK_TREE_VIEW (self->treeview), &path, NULL);
+
+  if (path==NULL) return;
+
+  gtk_tree_path_prev (path); //set next path
+  gtk_tree_view_set_cursor(GTK_TREE_VIEW(self->treeview), path, NULL, FALSE);
+  gtk_tree_view_row_activated (GTK_TREE_VIEW (self->treeview), path, NULL);
+}
 
 gboolean gessinger_quit (GtkWidget *widget,
 			 GdkEvent  *event,

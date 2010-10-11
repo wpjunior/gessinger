@@ -155,23 +155,34 @@ gessinger_interface_clear_grabed_notes(GessingerInterface *self)
       fluid_synth_noteoff (self->f_synth,
 			   self->grabed_key->sources[i].source_id,
 			   self->grabed_key->sources[i].midi_code);
+    self->grabed_key=NULL;
   }
+}
+
+static void gessinger_interface_next_preset_cb(GessingerInterface *self)
+{
+  if (self->grabed_key==NULL)
+    self->next_preset_callback(self->next_preset_callback_data);
+  else
+    gessinger_interface_clear_grabed_notes(self);
+}
+
+static void gessinger_interface_prev_preset_cb(GessingerInterface *self)
+{
+  if (self->grabed_key==NULL)
+    self->prev_preset_callback(self->prev_preset_callback_data);
+  else
+    gessinger_interface_clear_grabed_notes(self);
 }
 
 static void gessinger_interface_js_axis_callback(gint axis_id,
 						 gint value,
 						 GessingerInterface *self)
 {
-  int i;
-
-  if (value > 0)
-    i = fluid_synth_pitch_bend (self->f_synth, 0, 16383);
-  else
-    i = fluid_synth_pitch_bend (self->f_synth, 0, 0);
-  fluid_synth_cc (self->f_synth, 0, 100, 0);
-  fluid_synth_cc (self->f_synth, 0, 101, 0);
-  fluid_synth_cc (self->f_synth, 0, 10, 15);
-  g_print ("axis %d -> %d = %d\n", axis_id, value, i);
+  if (axis_id==0) {
+    if (value>0) gessinger_interface_next_preset_cb (self);
+    else if (value<0) gessinger_interface_prev_preset_cb (self);
+  }
 }
 
 static void gessinger_interface_js_button_callback(gint button,

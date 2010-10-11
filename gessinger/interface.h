@@ -50,6 +50,11 @@ struct _GessingerInterface
   GessingerPresetKey *grabed_key;
   GKeyFile *main_settings;
   gint active_preset_id;
+  void (*next_preset_callback) (gpointer data);
+  void (*prev_preset_callback) (gpointer data);
+
+  gpointer next_preset_callback_data;
+  gpointer prev_preset_callback_data;
 };
 
 struct _GessingerInterfaceClass
