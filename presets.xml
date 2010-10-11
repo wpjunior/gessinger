@@ -254,6 +254,9 @@
         </key>
         <key id="2">
             <midi source="1">38</midi>
+            <midi source="2" vel="30">62</midi>
+            <midi source="2" vel="30">66</midi>
+            <midi source="2" vel="30">69</midi>
         </key>
         <key id="3">
             <midi source="1">39</midi>

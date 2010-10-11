@@ -348,10 +348,13 @@ void on_chorus_value_changed(GtkWidget    *widget,
 void gessinger_gui_next_preset_cb (GessingerGui *self)
 {
   GtkTreePath *path = NULL;
+  GtkTreeIter iter;
 
   gtk_tree_view_get_cursor (GTK_TREE_VIEW (self->treeview), &path, NULL);
 
   if (path==NULL) return;
+  if (!gtk_tree_model_get_iter(GTK_TREE_MODEL(self->liststore), &iter, path)) return;
+  if (!gtk_tree_model_iter_next ((GtkTreeModel *) self->liststore, &iter)) return;
 
   gtk_tree_path_next (path); //set next path
   gtk_tree_view_set_cursor(GTK_TREE_VIEW(self->treeview), path, NULL, FALSE);
@@ -366,7 +369,7 @@ void gessinger_gui_prev_preset_cb(GessingerGui *self)
 
   if (path==NULL) return;
 
-  gtk_tree_path_prev (path); //set next path
+  gtk_tree_path_prev (path); //set prev
   gtk_tree_view_set_cursor(GTK_TREE_VIEW(self->treeview), path, NULL, FALSE);
   gtk_tree_view_row_activated (GTK_TREE_VIEW (self->treeview), path, NULL);
 }
