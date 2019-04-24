@@ -28,12 +28,12 @@ gessinger_interface_class_init (GessingerInterfaceClass *klass)
 
 static void
 gessinger_interface_load_font(GessingerFont *font,
-			      GessingerInterface *self)
+                  GessingerInterface *self)
 {
   int r;
   r = fluid_synth_sfload(self->f_synth,
-			 font->file,
-			 0); //TODO: save fid
+             font->file,
+             0); //TODO: save fid
   if (r<1) {
     g_warning ("Failed to open %s soundfont", font->file);
     return;
@@ -60,8 +60,8 @@ gessinger_interface_setup_fluidsynth(GessingerInterface *self)
 
   if (self->presets_config->list_fonts!=NULL)
     g_list_foreach (self->presets_config->list_fonts,
-		    (GFunc) gessinger_interface_load_font,
-		    self);
+            (GFunc) gessinger_interface_load_font,
+            self);
 
   /* load saved gain */
   d1 = 100.0f; //default gain
@@ -74,7 +74,7 @@ gessinger_interface_setup_fluidsynth(GessingerInterface *self)
   /* load active preset id */
   if (g_key_file_has_key (self->main_settings, "general", "active_preset", NULL))
     self->active_preset_id = g_key_file_get_integer (self->main_settings,
-						     "general", "active_preset", NULL);
+                             "general", "active_preset", NULL);
 
   /* load reverb settings */
   if (g_key_file_has_key (self->main_settings, "reverb", "active", NULL)) {
@@ -83,12 +83,12 @@ gessinger_interface_setup_fluidsynth(GessingerInterface *self)
     fluid_settings_setint (self->f_settings, "synth.reverb.active", i);
     fluid_synth_set_reverb_on (self->f_synth, i);
   }
-  
+
   /* default reverb values */
-  d1 = FLUID_REVERB_DEFAULT_ROOMSIZE;
-  d2 = FLUID_REVERB_DEFAULT_DAMP;
-  d3 = FLUID_REVERB_DEFAULT_WIDTH;
-  d4 = FLUID_REVERB_DEFAULT_LEVEL;
+  d1 = 0.2; // reverb room size
+  d2 = 0;   // reverb damp
+  d3 = 0.5; // reverb width
+  d4 = 0.9; // reverb level
 
   if (g_key_file_has_key (self->main_settings, "reverb", "room", NULL))
     d1 = g_key_file_get_double (self->main_settings, "reverb", "room", NULL);
@@ -110,16 +110,16 @@ gessinger_interface_setup_fluidsynth(GessingerInterface *self)
     i = g_key_file_get_boolean (self->main_settings, "chorus", "active", NULL);
 
     fluid_settings_setint (self->f_settings, "synth.chorus.active", i);
-    fluid_synth_set_reverb_on (self->f_synth, i);
+    fluid_synth_set_chorus_on (self->f_synth, i);
   }
 
 
   /* default chorus values */
-  i = FLUID_CHORUS_DEFAULT_N;
-  d1 = FLUID_CHORUS_DEFAULT_LEVEL;
-  d2 = FLUID_CHORUS_DEFAULT_SPEED;
-  d3 = FLUID_CHORUS_DEFAULT_DEPTH;
-  t = FLUID_CHORUS_DEFAULT_TYPE;
+  i = 3; // Chorus voice count
+  d1 = 2; // Chorus default level
+  d2 = 0.3; // Chorus default speed
+  d3 = 8; // Chorus default depth
+  t = FLUID_CHORUS_MOD_SINE;
 
   if (g_key_file_has_key (self->main_settings, "chorus", "n", NULL))
     i = g_key_file_get_integer (self->main_settings, "chorus", "n", NULL);
@@ -153,8 +153,8 @@ gessinger_interface_clear_grabed_notes(GessingerInterface *self)
   if (self->grabed_key!=NULL) {
     for (i=0; i < self->grabed_key->num_sources; i++)
       fluid_synth_noteoff (self->f_synth,
-			   self->grabed_key->sources[i].source_id,
-			   self->grabed_key->sources[i].midi_code);
+               self->grabed_key->sources[i].source_id,
+               self->grabed_key->sources[i].midi_code);
     self->grabed_key=NULL;
   }
 }
@@ -176,8 +176,8 @@ static void gessinger_interface_prev_preset_cb(GessingerInterface *self)
 }
 
 static void gessinger_interface_js_axis_callback(gint axis_id,
-						 gint value,
-						 GessingerInterface *self)
+                         gint value,
+                         GessingerInterface *self)
 {
   if (axis_id==0) {
     if (value>0) gessinger_interface_next_preset_cb (self);
@@ -186,8 +186,8 @@ static void gessinger_interface_js_axis_callback(gint axis_id,
 }
 
 static void gessinger_interface_js_button_callback(gint button,
-						   gint state,
-						   GessingerInterface *self)
+                           gint state,
+                           GessingerInterface *self)
 {
   GessingerPresetKey *pkey;
   GessingerPreset *preset;
@@ -217,20 +217,20 @@ static void gessinger_interface_js_button_callback(gint button,
 
     if (state)
       fluid_synth_noteon (self->f_synth,
-			  pkey->sources[i].source_id,
-			  pkey->sources[i].midi_code,
-			  pkey->sources[i].vel);
+              pkey->sources[i].source_id,
+              pkey->sources[i].midi_code,
+              pkey->sources[i].vel);
 
     else if (preset->mode!=GESSINGER_PRESET_GRAB_MODE) //Dont stop note in leave in grab_mode
       fluid_synth_noteoff (self->f_synth,
-			   pkey->sources[i].source_id,
-			   pkey->sources[i].midi_code);
+               pkey->sources[i].source_id,
+               pkey->sources[i].midi_code);
   }
 }
 
 GessingerInterface *
 gessinger_interface_new (GessingerPresetsConfig *presets_config,
-			 GessingerJscontrol *js_control)
+             GessingerJscontrol *js_control)
 {
   GessingerInterface *self;
   GError *error = NULL;
@@ -244,7 +244,7 @@ gessinger_interface_new (GessingerPresetsConfig *presets_config,
   self->main_settings = g_key_file_new ();
 
   if (!g_key_file_load_from_file (self->main_settings, "settings.conf",
-				  0, &error)) {
+                  0, &error)) {
     g_debug ("failed to read settings.conf: %s", error->message);
   }
 
@@ -259,29 +259,29 @@ gessinger_interface_new (GessingerPresetsConfig *presets_config,
 }
 
 static void gessinger_interface_load_source (gint *id,
-					     GessingerPresetSource *source,
-					     GessingerInterface *self)
+                         GessingerPresetSource *source,
+                         GessingerInterface *self)
 {
   gint r;
   r = fluid_synth_program_select (self->f_synth,
-				  source->id,
-				  source->font,
-				  source->bank,
-				  source->preset);
+                  source->id,
+                  source->font,
+                  source->bank,
+                  source->preset);
 
   fluid_synth_pitch_wheel_sens (self->f_synth,
-				source->id,
-				2);
+                source->id,
+                2);
 
   if (r!= FLUID_OK) g_warning ("Failed to set source to channel %d from"
-			       " Font %d Bank %d and Preset %d",
-			       source->id, source->font,
-			       source->bank, source->preset);
+                   " Font %d Bank %d and Preset %d",
+                   source->id, source->font,
+                   source->bank, source->preset);
 }
 
 static void gessinger_interface_clear_source (gint *id,
-					     GessingerPresetSource *source,
-					     GessingerInterface *self)
+                         GessingerPresetSource *source,
+                         GessingerInterface *self)
 {
   gint r;
   r = fluid_synth_unset_program (self->f_synth, source->id);
@@ -290,27 +290,27 @@ static void gessinger_interface_clear_source (gint *id,
 }
 
 gboolean gessinger_interface_set_preset (GessingerInterface *self,
-					 GessingerPreset    *preset,
-					 gboolean            save_settings)
+                     GessingerPreset    *preset,
+                     gboolean            save_settings)
 {
   /* Clear Grabed Notes */
   gessinger_interface_clear_grabed_notes(self);
-  
+
   /* Clear previous source */
   if (self->active_preset)
     g_hash_table_foreach (self->active_preset->sources,
-			  (GHFunc) gessinger_interface_clear_source,
-			  self);
+              (GHFunc) gessinger_interface_clear_source,
+              self);
 
   self->active_preset = preset;
 
   if (save_settings)
     g_key_file_set_integer(self->main_settings, "general", "active_preset",
-			   self->active_preset->id);
+               self->active_preset->id);
 
   g_hash_table_foreach (preset->sources,
-			(GHFunc) gessinger_interface_load_source,
-			self);
+            (GHFunc) gessinger_interface_load_source,
+            self);
   return TRUE;
 }
 
@@ -329,9 +329,8 @@ void gessinger_interface_save_configs(GessingerInterface *self)
   }
 
   if (!g_file_set_contents("settings.conf", content,
-			   lenght, &error)) {
+               lenght, &error)) {
     g_warning ("Failed to write settings.conf: %s", error->message);
     g_error_free(error);
   }
 }
-

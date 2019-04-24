@@ -44,19 +44,19 @@ gessinger_gui_init (GessingerGui *self)
   self->builder = gtk_builder_new ();
 
   gtk_builder_add_from_file(self->builder,
-			    "gessinger.ui",
-			    NULL);
+                "gessinger.ui",
+                NULL);
 
   self->window = GTK_WIDGET(gtk_builder_get_object(self->builder,
-						   "window"));
+                           "window"));
   self->keyboard = GTK_WIDGET(gtk_builder_get_object(self->builder,
-						     "keyboard"));
+                             "keyboard"));
   self->liststore = gtk_list_store_new (2, G_TYPE_POINTER, G_TYPE_STRING);
   self->treeview = GTK_WIDGET (gtk_builder_get_object(self->builder,
-						      "treeview"));
+                              "treeview"));
 
   gtk_tree_view_set_model(GTK_TREE_VIEW(self->treeview),
-			  GTK_TREE_MODEL(self->liststore));
+              GTK_TREE_MODEL(self->liststore));
 }
 
 void gessinger_gui_show (GessingerGui *self)
@@ -66,15 +66,15 @@ void gessinger_gui_show (GessingerGui *self)
 }
 
 void gessinger_gui_load_preset (GessingerPreset *preset,
-				GessingerGui    *self)
+                GessingerGui    *self)
 {
   GtkTreeIter iter;
   GtkTreePath *path;
   gtk_list_store_append (self->liststore, &iter);
   gtk_list_store_set (self->liststore, &iter,
-		      GESSINGER_COLUMN_PRESET, preset,
-		      GESSINGER_COLUMN_PRESET_NAME, preset->name,
-		      -1);
+              GESSINGER_COLUMN_PRESET, preset,
+              GESSINGER_COLUMN_PRESET_NAME, preset->name,
+              -1);
 
   if (preset->id == self->interface->active_preset_id) {
     path = gtk_tree_model_get_path (GTK_TREE_MODEL(self->liststore), &iter);
@@ -82,7 +82,7 @@ void gessinger_gui_load_preset (GessingerPreset *preset,
     if (gessinger_interface_set_preset(self->interface, preset, FALSE)) {
       gtk_tree_view_set_cursor (GTK_TREE_VIEW(self->treeview), path, NULL, FALSE);
       gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(self->builder, "active_preset")),
-			  preset->name);
+              preset->name);
     }
   }
 }
@@ -96,7 +96,7 @@ void gessinger_gui_show_about (GtkWidget *widget, GessingerGui *self)
 {
   GtkWidget *about_dialog;
   about_dialog = GTK_WIDGET(gtk_builder_get_object(self->builder,
-						   "aboutdialog"));
+                           "aboutdialog"));
   gtk_dialog_run(GTK_DIALOG(about_dialog));
   gtk_widget_hide(GTK_WIDGET(about_dialog));
 }
@@ -115,8 +115,8 @@ gessinger_gui_load_configs (GessingerGui *self)
 
   /* Reverb */
   r = fluid_settings_getint(self->interface->f_settings,
-			    "synth.reverb.active",
-			    &i);
+                "synth.reverb.active",
+                &i);
   if (r) {
     obj = gtk_builder_get_object(self->builder, "reverb_table");
     gtk_widget_set_sensitive(GTK_WIDGET(obj), i);
@@ -143,8 +143,8 @@ gessinger_gui_load_configs (GessingerGui *self)
 
   /* Chorus */
   r = fluid_settings_getint(self->interface->f_settings,
-			    "synth.chorus.active",
-			    &i);
+                "synth.chorus.active",
+                &i);
   if (r) {
     obj = gtk_builder_get_object(self->builder, "chorus_table");
     gtk_widget_set_sensitive(GTK_WIDGET(obj), i);
@@ -162,12 +162,12 @@ gessinger_gui_load_configs (GessingerGui *self)
   gtk_adjustment_set_value(GTK_ADJUSTMENT(obj), d);
 
   d = fluid_synth_get_chorus_speed_Hz(self->interface->f_synth);
-  obj = gtk_builder_get_object(self->builder, "chorus_speed");
-  gtk_adjustment_set_value(GTK_ADJUSTMENT(obj), d);
+  /* obj = gtk_builder_get_object(self->builder, "chorus_speed"); */
+  /* gtk_adjustment_set_value(GTK_ADJUSTMENT(obj), d); */
 
-  d = fluid_synth_get_chorus_depth_ms(self->interface->f_synth);
-  obj = gtk_builder_get_object(self->builder, "chorus_depth");
-  gtk_adjustment_set_value(GTK_ADJUSTMENT(obj), d);
+  /* d = fluid_synth_get_chorus_depth_ms(self->interface->f_synth); */
+  /* obj = gtk_builder_get_object(self->builder, "chorus_depth"); */
+  /* gtk_adjustment_set_value(GTK_ADJUSTMENT(obj), d); */
 
   i = fluid_synth_get_chorus_type(self->interface->f_synth);
   if (i==FLUID_CHORUS_MOD_TRIANGLE) {
@@ -193,8 +193,8 @@ gessinger_gui_new (GessingerInterface *interface)
   /* Load Presets */
   if (interface->presets_config->list_presets!=NULL)
     g_list_foreach(g_list_first(interface->presets_config->list_presets),
-		   (GFunc) gessinger_gui_load_preset,
-		   obj);
+           (GFunc) gessinger_gui_load_preset,
+           obj);
 
   gessinger_gui_load_configs(obj);
 
@@ -224,34 +224,34 @@ void gessinger_gui_edit_preset (GtkWidget *widget, GessingerGui *self)
 }
 
 void treeview_row_activated_cb (GtkTreeView       *tree_view,
-				GtkTreePath       *path,
-				GtkTreeViewColumn *column,
-				GessingerGui      *self)
+                GtkTreePath       *path,
+                GtkTreeViewColumn *column,
+                GessingerGui      *self)
 {
   GessingerPreset *preset;
   GtkTreeIter iter;
   if (!gtk_tree_model_get_iter (GTK_TREE_MODEL(self->liststore), &iter, path)) return;
   gtk_tree_model_get (GTK_TREE_MODEL(self->liststore), &iter,
-		      GESSINGER_COLUMN_PRESET, &preset,
-		      -1);
+              GESSINGER_COLUMN_PRESET, &preset,
+              -1);
   if ((preset!=NULL)&&(gessinger_interface_set_preset(self->interface, preset, TRUE))) {
     gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(self->builder, "active_preset")),
-			preset->name);
+            preset->name);
   }
 }
 
 void gain_value_changed_cb(GtkAdjustment *adjustment,
-			   GessingerGui *self)
+               GessingerGui *self)
 {
   float f;
   f = gtk_adjustment_get_value(adjustment);
   fluid_synth_set_gain(self->interface->f_synth, f/100);
   g_key_file_set_double (self->interface->main_settings,
-			 "general", "gain", f);
+             "general", "gain", f);
 }
 
 void reverb_button_toggled_cb(GtkToggleButton *button,
-			      GessingerGui    *self)
+                  GessingerGui    *self)
 {
   int i;
   GObject *obj;
@@ -259,16 +259,16 @@ void reverb_button_toggled_cb(GtkToggleButton *button,
   i = gtk_toggle_button_get_active(button);
 
   fluid_settings_setint (self->interface->f_settings,
-			 "synth.reverb.active", i);
+             "synth.reverb.active", i);
 
   g_key_file_set_boolean(self->interface->main_settings,
-			 "reverb", "active", i);
+             "reverb", "active", i);
   fluid_synth_set_reverb_on (self->interface->f_synth, i);
   obj = gtk_builder_get_object(self->builder, "reverb_table");
   gtk_widget_set_sensitive(GTK_WIDGET(obj), i);
 }
 void chorus_button_toggled_cb(GtkToggleButton *button,
-			      GessingerGui    *self)
+                  GessingerGui    *self)
 {
   int i;
   GObject *obj;
@@ -276,17 +276,17 @@ void chorus_button_toggled_cb(GtkToggleButton *button,
   i = gtk_toggle_button_get_active(button);
 
   fluid_settings_setint (self->interface->f_settings,
-			 "synth.chorus.active", i);
+             "synth.chorus.active", i);
 
   g_key_file_set_boolean(self->interface->main_settings,
-			 "chorus", "active", i);
+             "chorus", "active", i);
   fluid_synth_set_chorus_on (self->interface->f_synth, i);
   obj = gtk_builder_get_object(self->builder, "chorus_table");
   gtk_widget_set_sensitive(GTK_WIDGET(obj), i);
 }
 
 void on_reverb_value_changed(GtkWidget    *widget,
-			     GessingerGui *self)
+                 GessingerGui *self)
 {
   int r;
   double room, damp, level, width;
@@ -311,10 +311,10 @@ void on_reverb_value_changed(GtkWidget    *widget,
   g_key_file_set_double (self->interface->main_settings, "reverb", "width", width);
 
   fluid_synth_set_reverb(self->interface->f_synth, room,
-			     damp, width, level);
+                 damp, width, level);
 }
 void on_chorus_value_changed(GtkWidget    *widget,
-			     GessingerGui *self)
+                 GessingerGui *self)
 {
   int type, n;
   double level, speed, depth;
@@ -342,7 +342,7 @@ void on_chorus_value_changed(GtkWidget    *widget,
   g_key_file_set_integer (self->interface->main_settings, "chorus", "mode", type);
 
   fluid_synth_set_chorus(self->interface->f_synth, n, level,
-			 speed, depth, type);
+             speed, depth, type);
 }
 
 void gessinger_gui_next_preset_cb (GessingerGui *self)
@@ -375,8 +375,8 @@ void gessinger_gui_prev_preset_cb(GessingerGui *self)
 }
 
 gboolean gessinger_quit (GtkWidget *widget,
-			 GdkEvent  *event,
-			 GessingerGui *self)
+             GdkEvent  *event,
+             GessingerGui *self)
 {
   gessinger_interface_save_configs(self->interface);
   gtk_main_quit();
